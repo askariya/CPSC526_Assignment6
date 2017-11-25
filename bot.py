@@ -27,10 +27,10 @@ class botClient:
     def start_client(self):
         self.irc_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
-        self.connect_to_irc()
+        self.__connect()
         self.irc_socket.close()
 
-    def connect_to_irc(self):
+    def __connect(self):
         self.irc_socket.connect((self.host, self.port))  # connect to server
         #user authentication
         self.send_msg("USER "+ "test" +" "+ self.bot_nick +" "+ self.bot_nick + \
