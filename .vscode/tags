@@ -1,0 +1,39 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+argparse	../bot.py	/^import argparse$/;"	kind:namespace	line:1
+argparse	../conbot.py	/^import argparse$/;"	kind:namespace	line:1
+argparse	../docs/fw.py	/^import argparse$/;"	kind:namespace	line:1
+bot.py	../bot.py	1;"	kind:file	line:1
+check_file_exists	../docs/fw.py	/^def check_file_exists(filename):$/;"	kind:function	line:11
+check_ip	../docs/funcs.py	/^def check_ip(ip):$/;"	kind:function	line:4
+check_rule	../docs/funcs.py	/^def check_rule(rule):$/;"	kind:function	line:17
+compare_ips	../docs/funcs.py	/^def compare_ips(packet_ip, rule_ip, subnet):$/;"	kind:function	line:153
+conbot.py	../conbot.py	1;"	kind:file	line:1
+create_packet	../docs/funcs.py	/^def create_packet(line):$/;"	kind:function	line:88
+create_rule	../docs/funcs.py	/^def create_rule(line, line_num):$/;"	kind:function	line:50
+funcs	../docs/fw.py	/^import funcs$/;"	kind:namespace	line:4
+funcs.py	../docs/funcs.py	1;"	kind:file	line:1
+fw.py	../docs/fw.py	1;"	kind:file	line:1
+ip_to_binary	../docs/funcs.py	/^def ip_to_binary(ip):$/;"	kind:function	line:149
+main	../bot.py	/^def main():$/;"	kind:function	line:32
+main	../conbot.py	/^def main():$/;"	kind:function	line:32
+main	../docs/fw.py	/^def main():$/;"	kind:function	line:71
+os	../docs/fw.py	/^import os.path$/;"	kind:namespace	line:3
+parse_arguments	../bot.py	/^def parse_arguments():$/;"	kind:function	line:6
+parse_arguments	../conbot.py	/^def parse_arguments():$/;"	kind:function	line:6
+parse_arguments	../docs/fw.py	/^def parse_arguments():$/;"	kind:function	line:60
+path	../docs/fw.py	/^import os.path$/;"	kind:namespace	line:3
+print_error	../docs/fw.py	/^def print_error(message):$/;"	kind:function	line:8
+read_config	../docs/fw.py	/^def read_config(filename):$/;"	kind:function	line:18
+read_input_packets	../docs/fw.py	/^def read_input_packets():$/;"	kind:function	line:43
+rules	../docs/fw.py	/^rules = [] # global list to hold a set of rules (dictionaries)$/;"	kind:variable	line:6
+string	../docs/funcs.py	/^import string$/;"	kind:namespace	line:1
+sys	../bot.py	/^import sys$/;"	kind:namespace	line:2
+sys	../conbot.py	/^import sys$/;"	kind:namespace	line:2
+sys	../docs/funcs.py	/^import sys$/;"	kind:namespace	line:2
+sys	../docs/fw.py	/^import sys$/;"	kind:namespace	line:2
+validate_packet	../docs/funcs.py	/^def validate_packet(rules, packet):$/;"	kind:function	line:120
