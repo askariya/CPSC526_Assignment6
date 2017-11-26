@@ -19,8 +19,7 @@ class botClient:
         self.controller = None
         self.controller_nick = None
 
-    def start_client(self):
-        self.irc_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def start_client(self):        
         self.__connect()
 
         while True:
@@ -39,9 +38,10 @@ class botClient:
         self.irc_socket.close()
 
     def __connect(self):
+        self.irc_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.irc_socket.connect((self.host, self.port))  # connect to server
         self.send_msg("USER "+ "test" +" "+ self.bot_nick +" "+ self.bot_nick + \
-        " :weew\n") # user authentication
+        " :\n") # user authentication
         self.send_msg("NICK "+ self.bot_nick+"\n") # sets nick
         self.send_msg("JOIN "+ self.channel +"\n") # join the channel
 
@@ -80,7 +80,11 @@ class botClient:
         if command.startswith("attack"):
             pass
         elif command.startswith("move"):
-            pass
+            command = command.split()
+            if len(command) != 4:
+                return
+            self.__move(command[1], command[2], command[3])
+
         elif command == "status":
             self.send_status()
         elif command == "shutdown":
@@ -92,6 +96,19 @@ class botClient:
         if text.find('PING') != -1:
             self.send_msg('PONG ' + text.split()[1] + 'rn')
         return text
+
+    def __move(self, host, port, channel):
+        if not check_port(port):
+            return
+        port = int(port)
+
+        # reconnect to new channel
+        self.port = port
+        self.host = host
+        self.channel = "#" + channel
+        self.irc_socket.close()
+        self.__connect()
+        return
 
     def send_status(self):
         self.send_to_user(self.controller_nick, self.bot_nick)
@@ -118,6 +135,17 @@ class botClient:
     def send_to_user(self, nick, message):
         self.send_msg("PRIVMSG " + nick + " :" + message + "\n")
 
+# function to check if port is valid
+def check_port(port):
+    try:
+        port = int(port)
+    except ValueError:
+        return False
+    if port >= 0 and port <= 65535:
+        return True
+    else:
+        return False
+
 # argparse function to handle user input
 # Reference: https://docs.python.org/3.6/howto/argparse.html
 # define a string to hold the usage error msg
@@ -141,7 +169,7 @@ def parse_arguments():
     args = parser.parse_args()
 
     # check that port is in a valid range
-    if args.port < 0 or args.port > 65535:
+    if not check_port(args.port):
         parser.exit("usage: " + usage_string)
 
     return args
@@ -150,8 +178,8 @@ def parse_arguments():
 def main():
     args = parse_arguments()
     # launch the client
-    bot_client = botClient(args.host,
-                    int(args.port), args.channel, args.secret_phrase)
+    bot_client = botClient(args.host, args.port, args.channel,
+                           args.secret_phrase)
     bot_client.start_client()
 
 if __name__ == '__main__':
