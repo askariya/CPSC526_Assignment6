@@ -60,6 +60,7 @@ class botClient:
 
     # Function to check for the secret passphrase
     def check_msg(self, text):
+        # TODO add check for NICK
         if (not "PRIVMSG" in text) or (not self.channel in text):
             return False
 
