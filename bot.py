@@ -9,7 +9,7 @@ import socket
 import time
 
 
-class botClient:
+class Bot_Client:
     def __init__(self, host, port, channel, secret_phrase):
         self.host = host
         self.port = port
@@ -238,8 +238,8 @@ def parse_arguments():
 def main():
     args = parse_arguments()
     # launch the client
-    bot_client = botClient(args.host, args.port, args.channel,
-                           args.secret_phrase)
+    bot_client = Bot_Client(args.host, args.port, args.channel,
+                            args.secret_phrase)
     bot_client.start_client()
 
 if __name__ == '__main__':
