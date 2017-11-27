@@ -9,7 +9,6 @@ class Controller_Client:
         self.port = port
         self.channel = "#" + channel
         self.secret_phrase = secret_phrase
-        #TODO figure out a way to assign unique usernames to bots
         self.nick = "controller"
         self.irc_socket = None
         self.controller = None
