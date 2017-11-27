@@ -6,6 +6,7 @@ import argparse
 import sys
 import string
 import socket
+import time
 
 
 class botClient:
@@ -19,10 +20,10 @@ class botClient:
         self.controller = None
         self.controller_nick = None
 
-    def start_client(self):        
-        self.__connect()
+    def start_client(self):
+        connected = self.__attempt_connection()
 
-        while True:
+        while connected:
             text = self.get_text()
             self.log(text)
 
@@ -36,14 +37,30 @@ class botClient:
             self.receive_command(command)
 
         self.irc_socket.close()
+    
+    def __attempt_connection(self):
+        connected = False
+        timeout = 5 # timeout (in seconds)
+        timeout_start = time.time()
+        while not connected and (time.time() < timeout_start + timeout):
+            connected = self.__connect()
+        if not connected:
+            self.log("Error: Connection to Host: " + self.host + \
+                     " on Port: " + str(self.port) + " timed out.")
+        return connected
 
     def __connect(self):
         self.irc_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.irc_socket.connect((self.host, self.port))  # connect to server
+        try:
+            self.irc_socket.connect((self.host, self.port))  # connect to server
+        except Exception:
+            return False
+
         self.send_msg("USER "+ "test" +" "+ self.bot_nick +" "+ self.bot_nick + \
         " :\n") # user authentication
         self.send_msg("NICK "+ self.bot_nick+"\n") # sets nick
         self.send_msg("JOIN "+ self.channel +"\n") # join the channel
+        return True
 
     # Function to check for the secret passphrase
     def check_msg(self, text):
@@ -101,13 +118,17 @@ class botClient:
         if not check_port(port):
             return
         port = int(port)
-
         # reconnect to new channel
         self.port = port
         self.host = host
         self.channel = "#" + channel
         self.irc_socket.close()
-        self.__connect()
+        # attempt connection - shutdown upon failure
+        connected = self.__attempt_connection()
+        if not connected:
+            self.send_to_user(self.controller_nick, "Move failed")
+            self.__shutdown()
+            #TODO maybe reconnect to original server here
         return
 
     def send_status(self):
@@ -157,8 +178,8 @@ def parse_arguments():
                         help="Specifies the address of the server",
                         type=str)
     parser.add_argument("port",
-                        help="Specifies the port on which the server is listening. "
-                        "Port in integer range 0-65535",
+                        help="Specifies the port on which the server is listening."
+                        " Port in integer range 0-65535",
                         type=int)
     parser.add_argument("channel",
                         help="IRC channel to join",
