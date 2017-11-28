@@ -22,7 +22,7 @@ class Controller_Client:
             self.log(text)
             # prompt user to enter a command and execute it
             command = self.__prompt_command()
-            self.__execute_command(command)
+            self.__send_command(command)
             #TODO how to make while loop keep going aftet this???
 
         self.irc_socket.close()
@@ -32,7 +32,7 @@ class Controller_Client:
         return input("Please enter the command you wish to execute: ").strip()
 
     #TODO define functionality for each command 
-    def __execute_command(self, command):
+    def __send_command(self, command):
         if command == "status":
             pass
         elif command == "attack":
