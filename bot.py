@@ -174,7 +174,7 @@ class Bot_Client:
         self.send_to_user(self.controller_nick, self.bot_nick)
         self.log("Status sent to Controller")
 
-    # Closes connecting and terminates bot
+    # Closes connection and terminates bot
     def __shutdown(self):
         self.log("Shutting Down...")
         self.irc_socket.close()
