@@ -4,7 +4,6 @@ a bot client for a botnet.
 
 import argparse
 import sys
-import string
 import socket
 import time
 import random
