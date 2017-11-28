@@ -140,14 +140,14 @@ class Bot_Client:
         # attempt connection to new IRC server
         connected, conn_socket = self.__attempt_connection()
         if not connected:
-            self.send_to_user(self.controller_nick, "Move Failed")
+            self.send_to_user(self.controller_nick, "Move Failed: Connection Error")
             # reassign original connection info upon failure
             self.port = curr_port
             self.host = curr_host
             self.channel = curr_channel
         else:
             # send success message close old socket, reassign to new socket
-            self.send_to_user(self.controller_nick, "Move Successful")
+            self.send_to_user(self.controller_nick, "Move Successful...")
             self.irc_socket.close()
             self.irc_socket = conn_socket
             # delete current controller
