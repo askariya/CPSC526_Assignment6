@@ -18,11 +18,11 @@ class Controller_Client:
     def start_client(self):
         connected = self.__attempt_connection()
         while connected:
-            text = self.get_text()
-            self.log(text)
             # prompt user to enter a command and execute it
             command = self.__prompt_command()
             self.__send_command(command)
+            text = self.get_text()
+            self.log(text)
             #TODO how to make while loop keep going aftet this???
 
         self.irc_socket.close()
@@ -34,18 +34,21 @@ class Controller_Client:
     #TODO define functionality for each command 
     def __send_command(self, command):
         if command == "status":
-            pass
-        elif command == "attack":
-            pass 
-        elif command == "move":
-            pass 
+            return True
+        if command == "attack":
+            return True
+        if command == "move":
+            return True
         elif command == "quit":
             self.__terminate()
+            return True
         elif command == "shutdown":
-            pass 
+            return True
         else:
             self.send_to_channel("Garbage")
             self.log("Error: Unknown command " + command)
+            return False
+            
     # Closes connection and terminates controller
     def __terminate(self):
         self.log("Terminating...")
@@ -54,6 +57,7 @@ class Controller_Client:
 
     # Code adapted from: https://pythonspot.com/en/building-an-irc-bot/
     def get_text(self):
+        print("here")
         text = self.recv_msg() #receive the text
         if text.find('PING') != -1:
             self.send_msg('PONG ' + text.split()[1] + 'rn')
