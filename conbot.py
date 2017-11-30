@@ -55,6 +55,7 @@ class Controller_Client:
             self.__terminate()
             return True
         elif command == "shutdown":
+            self.send_to_channel(command)
             return True
         else:
             self.send_to_channel(command)

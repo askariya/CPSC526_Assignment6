@@ -1,1 +1,11 @@
 162.246.156.17 port 12399
+
+Question 1: Do we need to use threading or something similar for the controller?
+            
+            - if so: how can we efficiently handle sending a Pong as well as reading the data sent from the bots
+              as they both come from the same socket
+
+Question 2: If not, how do I handle the socket recv if I'm waiting for a command from the user 
+            (the Ping will not receive a Pong and will time out)
+            
+            - will only work if bots exist and send a response, otherwise recv is stuck waiting
