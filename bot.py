@@ -35,7 +35,7 @@ class Bot_Client:
             command = input_list[1].strip()
 
             # execute the command
-            self.receive_command(command)
+            self.execute_command(command)
 
         self.irc_socket.close()
 
@@ -119,6 +119,9 @@ class Bot_Client:
             self.send_status()
         elif command == "shutdown":
             self.__shutdown()
+        else:
+            self.send_to_user(self.controller_nick, "Unknown Command")
+
 
 
     # modify so that the bot doesn't close connection until it can initiate a connection with 2nd IRC
@@ -193,6 +196,7 @@ class Bot_Client:
 
     # Closes connection and terminates bot
     def __shutdown(self):
+        self.send_to_user(self.controller_nick, "Shutting Down...")
         self.log("Shutting Down...")
         self.irc_socket.close()
         sys.exit()

