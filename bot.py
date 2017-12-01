@@ -79,7 +79,6 @@ class Bot_Client:
 
     # Function to check for the secret passphrase
     def check_msg(self, text):
-        # TODO add check for NICK --> for if controller changes nickname
         if (not "PRIVMSG" in text) or (not self.channel in text):
             return False
 

