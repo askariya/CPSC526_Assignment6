@@ -76,7 +76,6 @@ class Bot_Client:
             elif "001" in response:
                 valid_nick = True
 
-
     # Function to check for the secret passphrase
     def check_msg(self, text):
         if (not "PRIVMSG" in text) or (not self.channel in text):
@@ -84,9 +83,9 @@ class Bot_Client:
 
         # get the sender's ID
         sender = text.split(':')[1].split(' ')[0]
-        input_list = text.split(' :')
         # get the message sent by the sender
-        message = input_list[1].strip()
+        message = text.split(' :')[1].strip()
+        # get the message sent by the sender
 
         # if no controller is defined
         if self.controller is None:
@@ -133,6 +132,7 @@ class Bot_Client:
         elif command == "shutdown":
             self.__shutdown()
         else:
+            print("Command: " + command)
             self.send_to_user(self.controller_nick, "Unknown Command")
 
 
