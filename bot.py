@@ -45,24 +45,21 @@ class Bot_Client:
     # attempts connection with an input timeout in seconds
     def __attempt_connection(self, timeout):
         connected = False
-        timeout_start = time.time()
-        while not connected and (time.time() < timeout_start + timeout):
-            connected, conn_socket = self.__connect()
+        connected, conn_socket = self.__connect(timeout)
         if not connected:
             self.log("Error: Connection to Host: " + self.host + \
                      " on Port: " + str(self.port) + " failed.")
         return connected, conn_socket
 
-    def __connect(self):
+    def __connect(self, timeout):
         conn_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        conn_socket.settimeout(1)
+        conn_socket.settimeout(timeout)
         try:
             #TODO connect will stay hung up if the host is real
             conn_socket.connect((self.host, self.port))  # connect to server
         except socket.error as msg:
-            print(msg)
             return False, None
-
+        conn_socket.settimeout(None)
         conn_socket.send(("USER "+ "test" +" "+ self.bot_nick +" "+ self.bot_nick + \
         " :\n").encode()) # user authentication
         self.__establish_nick(conn_socket)
@@ -139,7 +136,8 @@ class Bot_Client:
         elif command == "shutdown":
             self.__shutdown()
         else:
-            self.send_to_user(self.controller_nick, "Unknown Command")
+            pass
+            # self.send_to_user(self.controller_nick, "Unknown Command")
 
     # modify so that the bot doesn't close connection until it can initiate a connection with 2nd IRC
     # moves the bot to the specified host
@@ -157,7 +155,7 @@ class Bot_Client:
         self.host = host
         self.channel = "#" + channel
         # attempt connection to new IRC server (timeout close to 0)
-        connected, conn_socket = self.__attempt_connection(0.5)
+        connected, conn_socket = self.__attempt_connection(1)
         if not connected:
             self.send_to_user(self.controller_nick, "Move Failed, Connection Error")
             # reassign original connection info upon failure

