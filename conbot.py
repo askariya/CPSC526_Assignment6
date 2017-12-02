@@ -2,6 +2,7 @@ import argparse
 import sys
 import socket
 import time
+import random
 from termios import tcflush, TCIFLUSH
 
 class Controller_Client:
@@ -10,10 +11,9 @@ class Controller_Client:
         self.port = port
         self.channel = "#" + channel
         self.secret_phrase = secret_phrase
-        self.nick = "controller"
+        self.contr_counter = random.randint(1,100)
+        self.nick = "controller" + str(self.contr_counter)
         self.irc_socket = None
-        self.controller = None
-        self.controller_nick = None
         self.attack_counter = 0
 
     def start_client(self):
@@ -142,8 +142,8 @@ class Controller_Client:
             conn_socket.send(("NICK "+ self.nick+"\n").encode()) # sets nick
             response = conn_socket.recv(2040).decode()
             if "433" in response:
-                self.bot_counter += 1
-                self.bot_nick = "robotnik" + str(self.bot_counter)
+                self.contr_counter += 1
+                self.nick = "robotnik" + str(self.contr_counter)
             elif "001" in response:
                 valid_nick = True
 
