@@ -119,6 +119,7 @@ class Bot_Client:
         if command.startswith("attack"):
             command = command.split()
             if len(command) != 3:
+                self.log("Error: Attack Failed due to incorrect number of arguments.")
                 self.send_to_user(self.controller_nick, "Attack Failed, " + \
                                   "Incorrect number of arguments")
                 return
@@ -126,6 +127,7 @@ class Bot_Client:
         elif command.startswith("move"):
             command = command.split()
             if len(command) != 4:
+                self.log("Error: Move Failed due to incorrect number of arguments.")
                 self.send_to_user(self.controller_nick, "Move Failed, " + \
                                   "Incorrect number of arguments")
                 return
@@ -143,6 +145,7 @@ class Bot_Client:
     # moves the bot to the specified host
     def __move(self, host, port, channel):
         if not check_port(port):
+            self.log("Error: Move Failed, Port: " + str(port) + " is not valid.")
             self.send_to_user(self.controller_nick, "Move Failed, Invalid Port")
             return
         port = int(port)
@@ -157,6 +160,8 @@ class Bot_Client:
         # attempt connection to new IRC server (timeout close to 0)
         connected, conn_socket = self.__attempt_connection(1)
         if not connected:
+            self.log("Error: Move to Host: " + host + \
+                     " on Port: " + str(port) + " failed.")
             self.send_to_user(self.controller_nick, "Move Failed, Connection Error")
             # reassign original connection info upon failure
             self.port = curr_port
@@ -164,7 +169,8 @@ class Bot_Client:
             self.channel = curr_channel
         else:
             # send success message close old socket, reassign to new socket
-            self.send_to_user(self.controller_nick, "Move Successful...")
+            self.log("Move Successful")
+            self.send_to_user(self.controller_nick, "Move Successful")
             self.irc_socket.close()
             self.irc_socket = conn_socket
             # delete current controller
@@ -176,7 +182,7 @@ class Bot_Client:
     def __attack(self, host, port):
         self.attack_counter += 1
         if not check_port(port):
-            self.log("Error: Port: " + str(port) + " is not valid.")
+            self.log("Error: Attack Failed, Port: " + str(port) + " is not valid.")
             self.send_to_user(self.controller_nick, "Attack Failed, Invalid Port")
             return
         port = int(port)
@@ -189,7 +195,7 @@ class Bot_Client:
         except socket.error:
             connected = False
         attack_socket.settimeout(None)
-        
+
         if not connected:
             self.log("Error: Attack on Host: " + host + \
                      " on Port: " + str(port) + " failed.")
@@ -199,6 +205,7 @@ class Bot_Client:
             # send attack message and report success
             attack_socket.send((str(self.attack_counter) + \
                                " " + self.bot_nick).encode())
+            self.log("Attack Successful")
             self.send_to_user(self.controller_nick, "Attack Successful")
         attack_socket.close()
 
