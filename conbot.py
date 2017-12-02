@@ -47,10 +47,11 @@ class Controller_Client:
         # self.log("done")
 
         # check if msg is a DM
-        self.__parse_response(command, response)
+        self.__handle_response(command, response)
     
     # receives and handles the response from the bots
-    def __parse_response(self, command, response):
+    def __handle_response(self, command, response):
+        # parse the response into a dictionary
         response_dict = {}
         for line in response.strip().split('\n'):
             # ignore responses that are not private messages

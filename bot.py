@@ -50,14 +50,17 @@ class Bot_Client:
             connected, conn_socket = self.__connect()
         if not connected:
             self.log("Error: Connection to Host: " + self.host + \
-                     " on Port: " + str(self.port) + " timed out.")
+                     " on Port: " + str(self.port) + " failed.")
         return connected, conn_socket
 
     def __connect(self):
         conn_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        conn_socket.settimeout(1)
         try:
+            #TODO connect will stay hung up if the host is real
             conn_socket.connect((self.host, self.port))  # connect to server
-        except Exception:
+        except socket.error as msg:
+            print(msg)
             return False, None
 
         conn_socket.send(("USER "+ "test" +" "+ self.bot_nick +" "+ self.bot_nick + \
@@ -137,8 +140,6 @@ class Bot_Client:
             self.__shutdown()
         else:
             self.send_to_user(self.controller_nick, "Unknown Command")
-
-
 
     # modify so that the bot doesn't close connection until it can initiate a connection with 2nd IRC
     # moves the bot to the specified host
