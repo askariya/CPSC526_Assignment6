@@ -137,9 +137,6 @@ class Bot_Client:
             self.send_status()
         elif command == "shutdown":
             self.__shutdown()
-        else:
-            pass
-            # self.send_to_user(self.controller_nick, "Unknown Command")
 
     # modify so that the bot doesn't close connection until it can initiate a connection with 2nd IRC
     # moves the bot to the specified host
