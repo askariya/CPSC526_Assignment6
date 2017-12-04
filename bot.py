@@ -15,7 +15,6 @@ class Bot_Client:
         self.channel = "#" + channel
         self.secret_phrase = secret_phrase
         self.bot_counter = random.randint(1,100)
-        #TODO figure out a way to assign unique usernames to bots
         self.bot_nick = "robotnik" + str(self.bot_counter)
         self.irc_socket = None
         self.controller = None
@@ -38,8 +37,12 @@ class Bot_Client:
             command = input_list[1].strip()
 
             # execute the command
-            self.execute_command(command)
-
+            try:
+                self.execute_command(command)
+            except socket.error:
+                self.log("Connection Error.")
+                self.__reconnect(5)
+                
         self.irc_socket.close()
 
     # attempts connection with an input timeout in seconds
@@ -55,7 +58,6 @@ class Bot_Client:
         conn_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         conn_socket.settimeout(timeout)
         try:
-            #TODO connect will stay hung up if the host is real
             conn_socket.connect((self.host, self.port))  # connect to server
         except socket.error as msg:
             return False, None
@@ -65,6 +67,14 @@ class Bot_Client:
         self.__establish_nick(conn_socket)
         conn_socket.send(("JOIN "+ self.channel +"\n").encode()) # join the channel
         return True, conn_socket
+
+    def __reconnect(self, timeout):
+        self.log("Reconnecting...")
+        connected, conn_socket = self.__attempt_connection(timeout)
+        if connected:
+            self.irc_socket = conn_socket
+            self.log("Reconnection successful.\nContinuing...")
+        return connected
 
     # keeps sending nick messages until a valid nick is found
     def __establish_nick(self, conn_socket):
@@ -115,27 +125,24 @@ class Bot_Client:
 
     # function to receive and execute the command sent by the controller
     def execute_command(self, command):
-        # TODO add function call for each command
-        if command.startswith("attack"):
-            command = command.split()
+        command = command.split() # split command into list
+        if command[0] == "attack":
             if len(command) != 3:
                 self.log("Error: Attack Failed due to incorrect number of arguments.")
                 self.send_to_user(self.controller_nick, "Attack Failed, " + \
                                   "Incorrect number of arguments")
                 return
             self.__attack(command[1], command[2])
-        elif command.startswith("move"):
-            command = command.split()
+        elif command[0] == "move":
             if len(command) != 4:
                 self.log("Error: Move Failed due to incorrect number of arguments.")
                 self.send_to_user(self.controller_nick, "Move Failed, " + \
                                   "Incorrect number of arguments")
                 return
             self.__move(command[1], command[2], command[3])
-
-        elif command == "status":
+        elif command[0] == "status":
             self.send_status()
-        elif command == "shutdown":
+        elif command[0] == "shutdown":
             self.__shutdown()
 
     # modify so that the bot doesn't close connection until it can initiate a connection with 2nd IRC

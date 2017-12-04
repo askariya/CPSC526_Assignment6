@@ -34,7 +34,7 @@ class Controller_Client:
         tcflush(sys.stdin, TCIFLUSH) # flush input buffer while command was being tested
         return input("Please enter the command you wish to execute: ").strip()
 
-    #TODO define functionality for each command 
+    #defines functionality for each channel
     def __send_command(self, command):
         if command == "quit":
             self.__terminate()
@@ -51,9 +51,10 @@ class Controller_Client:
 
         # check if msg is a DM
         self.__handle_response(command, response)
-    
+
     # receives and handles the response from the bots
     def __handle_response(self, command, response):
+        command = command.split()
         # parse the response into a dictionary
         response_dict = {}
         for line in response.strip().split('\n'):
@@ -65,14 +66,14 @@ class Controller_Client:
                 message = line.split(' :')[1].strip()
                 response_dict[sender] = message
 
-        if command == "status":
+        if command[0] == "status":
             bot_list = []
             for bot in response_dict:
                 bot_list.append(bot)
             self.log("Found " + str(len(bot_list)) + " bots: " + ", ".join(bot_list))
             return True
-        
-        if command.startswith("attack") or command.startswith("move"):
+
+        if command[0] == "attack" or command[0] == "move":
             successful = 0
             unsuccessful = 0
             for bot in response_dict:
@@ -85,7 +86,7 @@ class Controller_Client:
                      str(unsuccessful) + " unsuccessful")
             return True
 
-        elif command == "shutdown":
+        elif command[0] == "shutdown":
             total_sd = 0
             for bot in response_dict:
                 self.log(bot + ": " + response_dict[bot])
