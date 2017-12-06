@@ -177,6 +177,7 @@ class Bot_Client:
             # send success message close old socket, reassign to new socket
             self.log("Move Successful")
             self.send_to_user(self.controller_nick, "Move Successful")
+            time.sleep(0.5) # sleep for a short time so the confirmation of a move goes through
             self.irc_socket.close()
             self.irc_socket = conn_socket
             # delete current controller
@@ -213,6 +214,7 @@ class Bot_Client:
                                " " + self.bot_nick).encode())
             self.log("Attack Successful")
             self.send_to_user(self.controller_nick, "Attack Successful")
+            time.sleep(0.5) # sleep for a short time so the confirmation of an attack goes through
         attack_socket.close()
 
     # sends the bot status to the controller

