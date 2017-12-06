@@ -31,6 +31,7 @@ class Controller_Client:
             while sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
                 command = sys.stdin.readline()
                 if command:
+                    command = command.strip()
                     self.__send_command(command)
                     tcflush(sys.stdin, TCIFLUSH) # flush the input buffer after executing
                     self.log("\nPlease enter the command you wish to execute: ")

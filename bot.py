@@ -27,8 +27,12 @@ class Bot_Client:
             sys.exit()
             
         while connected:
-            text = self.get_text()
-            self.log(text)
+            try:
+                text = self.get_text()
+                self.log(text)
+            except socket.error:
+                self.log("Connection Error.")
+                self.__reconnect(5)
 
             # validate message (check if controller *command*)
             if not self.check_msg(text):
@@ -68,14 +72,6 @@ class Bot_Client:
         conn_socket.send(("JOIN "+ self.channel +"\n").encode()) # join the channel
         return True, conn_socket
 
-    def __reconnect(self, timeout):
-        self.log("Reconnecting...")
-        connected, conn_socket = self.__attempt_connection(timeout)
-        if connected:
-            self.irc_socket = conn_socket
-            self.log("Reconnection successful.\nContinuing...")
-        return connected
-
     # keeps sending nick messages until a valid nick is found
     def __establish_nick(self, conn_socket):
         valid_nick = False
@@ -88,6 +84,15 @@ class Bot_Client:
             elif "001" in response:
                 valid_nick = True
 
+    # attempt reconnection with timeout
+    def __reconnect(self, timeout):
+        self.log("Reconnecting...")
+        connected, conn_socket = self.__attempt_connection(timeout)
+        if connected:
+            self.irc_socket = conn_socket
+            self.log("Reconnection successful.\nContinuing...")
+        return connected
+
     # Function to check for the secret passphrase
     def check_msg(self, text):
         if (not "PRIVMSG" in text) or (not self.channel in text):
@@ -97,8 +102,7 @@ class Bot_Client:
         sender = text.split(':')[1].split(' ')[0]
         # get the message sent by the sender
         message = text.split(' :')[1].strip()
-        # get the message sent by the sender
-
+        
         # if no controller is defined
         if self.controller is None:
             # if the message is the secret phrase, assign the controller
