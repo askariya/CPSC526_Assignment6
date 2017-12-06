@@ -13,36 +13,37 @@ CMDS	../docs/bot_muaz.py	/^CMDS = ['status', 'attack', 'move', 'quit', 'shutdown
 Cipher	../docs/client.py	/^from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes$/;"	kind:namespace	line:9
 Cipher	../docs/server.py	/^from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes$/;"	kind:namespace	line:10
 Client	../docs/client.py	/^class Client:$/;"	kind:class	line:16
-Controller_Client	../conbot.py	/^class Controller_Client:$/;"	kind:class	line:8
+Controller_Client	../conbot.py	/^class Controller_Client:$/;"	kind:class	line:9
 DEBUG	../docs/bot_muaz.py	/^DEBUG = True$/;"	kind:variable	line:9
 Server	../docs/server.py	/^class Server:$/;"	kind:class	line:18
-TCIFLUSH	../conbot.py	/^from termios import tcflush, TCIFLUSH$/;"	kind:namespace	line:6
-__attack	../bot.py	/^    def __attack(self, host, port):$/;"	kind:member	line:179
-__attempt_connection	../bot.py	/^    def __attempt_connection(self, timeout):$/;"	kind:member	line:46
-__attempt_connection	../conbot.py	/^    def __attempt_connection(self, timeout):$/;"	kind:member	line:115
+TCIFLUSH	../conbot.py	/^from termios import tcflush, TCIFLUSH$/;"	kind:namespace	line:7
+__attack	../bot.py	/^    def __attack(self, host, port):$/;"	kind:member	line:193
+__attempt_connection	../bot.py	/^    def __attempt_connection(self, timeout):$/;"	kind:member	line:53
+__attempt_connection	../conbot.py	/^    def __attempt_connection(self, timeout):$/;"	kind:member	line:131
 __authenticate	../docs/bot_muaz.py	/^    def __authenticate(self):$/;"	kind:member	line:70
-__connect	../bot.py	/^    def __connect(self, timeout):$/;"	kind:member	line:54
-__connect	../conbot.py	/^    def __connect(self, timeout):$/;"	kind:member	line:123
+__connect	../bot.py	/^    def __connect(self, timeout):$/;"	kind:member	line:61
+__connect	../conbot.py	/^    def __connect(self, timeout):$/;"	kind:member	line:139
 __connect_to_irc_server	../docs/bot_muaz.py	/^    def __connect_to_irc_server(self):$/;"	kind:member	line:57
-__establish_nick	../bot.py	/^    def __establish_nick(self, conn_socket):$/;"	kind:member	line:70
-__establish_nick	../conbot.py	/^    def __establish_nick(self, conn_socket):$/;"	kind:member	line:139
+__establish_nick	../bot.py	/^    def __establish_nick(self, conn_socket):$/;"	kind:member	line:76
+__establish_nick	../conbot.py	/^    def __establish_nick(self, conn_socket):$/;"	kind:member	line:155
 __handle_command	../docs/bot_muaz.py	/^    def __handle_command(self, msg):$/;"	kind:member	line:85
-__handle_response	../conbot.py	/^    def __handle_response(self, command, response):$/;"	kind:member	line:56
+__handle_response	../conbot.py	/^    def __handle_response(self, command, response):$/;"	kind:member	line:70
 __init__	../bot.py	/^    def __init__(self, host, port, channel, secret_phrase):$/;"	kind:member	line:12
-__init__	../conbot.py	/^    def __init__(self, host, port, channel, secret_phrase):$/;"	kind:member	line:9
+__init__	../conbot.py	/^    def __init__(self, host, port, channel, secret_phrase):$/;"	kind:member	line:10
 __init__	../docs/bot_muaz.py	/^    def __init__(self, hostname, port, channel, secret_phrase):$/;"	kind:member	line:14
 __init__	../docs/client.py	/^    def __init__(self, command, filename, host, port, cipher, key):$/;"	kind:member	line:17
 __init__	../docs/server.py	/^    def __init__(self, port, secret_key):$/;"	kind:member	line:19
 __listen	../docs/bot_muaz.py	/^    def __listen(self):$/;"	kind:member	line:129
-__move	../bot.py	/^    def __move(self, host, port, channel):$/;"	kind:member	line:143
-__prompt_command	../conbot.py	/^    def __prompt_command(self):$/;"	kind:member	line:33
+__move	../bot.py	/^    def __move(self, host, port, channel):$/;"	kind:member	line:156
+__prompt_command	../conbot.py	/^    def __prompt_command(self):$/;"	kind:member	line:48
 __receive_message	../docs/bot_muaz.py	/^    def __receive_message(self):$/;"	kind:member	line:45
-__send_command	../conbot.py	/^    def __send_command(self, command):$/;"	kind:member	line:38
+__reconnect	../bot.py	/^    def __reconnect(self, timeout):$/;"	kind:member	line:88
+__send_command	../conbot.py	/^    def __send_command(self, command):$/;"	kind:member	line:53
 __send_message	../docs/bot_muaz.py	/^    def __send_message(self, msg):$/;"	kind:member	line:39
 __send_to_channel	../docs/bot_muaz.py	/^    def __send_to_channel(self, msg):$/;"	kind:member	line:25
 __send_to_controller	../docs/bot_muaz.py	/^    def __send_to_controller(self, msg):$/;"	kind:member	line:32
-__shutdown	../bot.py	/^    def __shutdown(self):$/;"	kind:member	line:215
-__terminate	../conbot.py	/^    def __terminate(self):$/;"	kind:member	line:101
+__shutdown	../bot.py	/^    def __shutdown(self):$/;"	kind:member	line:230
+__terminate	../conbot.py	/^    def __terminate(self):$/;"	kind:member	line:117
 __update_controller_nickname	../docs/bot_muaz.py	/^    def __update_controller_nickname(self, msg):$/;"	kind:member	line:124
 __validate_msg	../docs/bot_muaz.py	/^    def __validate_msg(self, msg):$/;"	kind:member	line:75
 __verify_controller	../docs/bot_muaz.py	/^    def __verify_controller(self, msg):$/;"	kind:member	line:106
@@ -56,9 +57,9 @@ argparse	../docs/server.py	/^import argparse$/;"	kind:namespace	line:1
 binascii	../docs/client.py	/^import binascii$/;"	kind:namespace	line:5
 bot.py	../bot.py	1;"	kind:file	line:1
 bot_muaz.py	../docs/bot_muaz.py	1;"	kind:file	line:1
-check_msg	../bot.py	/^    def check_msg(self, text):$/;"	kind:member	line:82
-check_port	../bot.py	/^def check_port(port):$/;"	kind:function	line:240
-check_port	../conbot.py	/^def check_port(port):$/;"	kind:function	line:175
+check_msg	../bot.py	/^    def check_msg(self, text):$/;"	kind:member	line:97
+check_port	../bot.py	/^def check_port(port):$/;"	kind:function	line:255
+check_port	../conbot.py	/^def check_port(port):$/;"	kind:function	line:191
 client.py	../docs/client.py	1;"	kind:file	line:1
 compute_challenge	../docs/client.py	/^    def compute_challenge(self):$/;"	kind:member	line:86
 compute_challenge	../docs/server.py	/^    def compute_challenge(self):$/;"	kind:member	line:96
@@ -71,22 +72,22 @@ display_stderr	../docs/client.py	/^def display_stderr(message):$/;"	kind:functio
 download_file	../docs/client.py	/^    def download_file(self):$/;"	kind:member	line:122
 encrypt_data	../docs/client.py	/^    def encrypt_data(self, data):$/;"	kind:member	line:155
 encrypt_data	../docs/server.py	/^    def encrypt_data(self, data):$/;"	kind:member	line:186
-execute_command	../bot.py	/^    def execute_command(self, command):$/;"	kind:member	line:117
+execute_command	../bot.py	/^    def execute_command(self, command):$/;"	kind:member	line:131
 generate_hash	../docs/client.py	/^    def generate_hash(self, message):$/;"	kind:member	line:93
 generate_hash	../docs/server.py	/^    def generate_hash(self, message):$/;"	kind:member	line:114
-get_text	../bot.py	/^    def get_text(self):$/;"	kind:member	line:110
-get_text	../conbot.py	/^    def get_text(self):$/;"	kind:member	line:108
+get_text	../bot.py	/^    def get_text(self):$/;"	kind:member	line:124
+get_text	../conbot.py	/^    def get_text(self):$/;"	kind:member	line:124
 hashlib	../docs/client.py	/^import hashlib$/;"	kind:namespace	line:7
 hashlib	../docs/server.py	/^import hashlib$/;"	kind:namespace	line:5
 hmac	../docs/client.py	/^import hmac$/;"	kind:namespace	line:6
 hmac	../docs/server.py	/^import hmac$/;"	kind:namespace	line:4
 listen	../testserver.py	/^def listen():$/;"	kind:function	line:6
-log	../bot.py	/^    def log(self, message):$/;"	kind:member	line:222
-log	../conbot.py	/^    def log(self, message):$/;"	kind:member	line:151
+log	../bot.py	/^    def log(self, message):$/;"	kind:member	line:237
+log	../conbot.py	/^    def log(self, message):$/;"	kind:member	line:167
 log	../docs/bot_muaz.py	/^def log(msg):$/;"	kind:function	line:201
 log	../docs/server.py	/^def log(message):$/;"	kind:function	line:232
-main	../bot.py	/^def main():$/;"	kind:function	line:279
-main	../conbot.py	/^def main():$/;"	kind:function	line:214
+main	../bot.py	/^def main():$/;"	kind:function	line:294
+main	../conbot.py	/^def main():$/;"	kind:function	line:230
 main	../docs/bot_muaz.py	/^def main():$/;"	kind:function	line:206
 main	../docs/client.py	/^def main():$/;"	kind:function	line:255
 main	../docs/server.py	/^def main():$/;"	kind:function	line:259
@@ -99,14 +100,14 @@ pad	../docs/server.py	/^    def pad(self, data, block_size):$/;"	kind:member	lin
 padding	../docs/client.py	/^from cryptography.hazmat.primitives import padding$/;"	kind:namespace	line:11
 padding	../docs/server.py	/^from cryptography.hazmat.primitives import padding$/;"	kind:namespace	line:12
 parse_args	../docs/bot_muaz.py	/^def parse_args():$/;"	kind:function	line:164
-parse_arguments	../bot.py	/^def parse_arguments():$/;"	kind:function	line:253
-parse_arguments	../conbot.py	/^def parse_arguments():$/;"	kind:function	line:188
+parse_arguments	../bot.py	/^def parse_arguments():$/;"	kind:function	line:268
+parse_arguments	../conbot.py	/^def parse_arguments():$/;"	kind:function	line:204
 parse_arguments	../docs/client.py	/^def parse_arguments():$/;"	kind:function	line:206
 parse_arguments	../docs/server.py	/^def parse_arguments():$/;"	kind:function	line:239
 path	../docs/server.py	/^import os.path$/;"	kind:namespace	line:8
 print_function	../docs/client.py	/^from __future__ import print_function$/;"	kind:namespace	line:1
 random	../bot.py	/^import random$/;"	kind:namespace	line:9
-random	../conbot.py	/^import random$/;"	kind:namespace	line:5
+random	../conbot.py	/^import random$/;"	kind:namespace	line:6
 random	../docs/server.py	/^import random$/;"	kind:namespace	line:6
 receive_authentication_result	../docs/client.py	/^    def receive_authentication_result(self):$/;"	kind:member	line:73
 receive_challenge	../docs/client.py	/^    def receive_challenge(self):$/;"	kind:member	line:70
@@ -115,10 +116,11 @@ recv_data	../docs/client.py	/^    def recv_data(self):$/;"	kind:member	line:149
 recv_data	../docs/server.py	/^    def recv_data(self):$/;"	kind:member	line:180
 recv_file_request	../docs/server.py	/^    def recv_file_request(self):$/;"	kind:member	line:120
 recv_init_msg	../docs/server.py	/^    def recv_init_msg(self):$/;"	kind:member	line:75
-recv_msg	../bot.py	/^    def recv_msg(self):$/;"	kind:member	line:229
-recv_msg	../conbot.py	/^    def recv_msg(self):$/;"	kind:member	line:158
+recv_msg	../bot.py	/^    def recv_msg(self):$/;"	kind:member	line:244
+recv_msg	../conbot.py	/^    def recv_msg(self):$/;"	kind:member	line:174
 recv_msg	../docs/client.py	/^    def recv_msg(self):$/;"	kind:member	line:136
 recv_msg	../docs/server.py	/^    def recv_msg(self):$/;"	kind:member	line:167
+select	../conbot.py	/^import select$/;"	kind:namespace	line:3
 send_challenge	../docs/server.py	/^    def send_challenge(self):$/;"	kind:member	line:89
 send_computed_challenge	../docs/client.py	/^    def send_computed_challenge(self):$/;"	kind:member	line:80
 send_data	../docs/client.py	/^    def send_data(self, data):$/;"	kind:member	line:146
@@ -126,25 +128,25 @@ send_data	../docs/server.py	/^    def send_data(self, data):$/;"	kind:member	lin
 send_file	../docs/server.py	/^    def send_file(self, filename):$/;"	kind:member	line:144
 send_file_request	../docs/client.py	/^    def send_file_request(self):$/;"	kind:member	line:98
 send_init_msg	../docs/client.py	/^    def send_init_msg(self):$/;"	kind:member	line:59
-send_msg	../bot.py	/^    def send_msg(self, message):$/;"	kind:member	line:226
-send_msg	../conbot.py	/^    def send_msg(self, message):$/;"	kind:member	line:155
+send_msg	../bot.py	/^    def send_msg(self, message):$/;"	kind:member	line:241
+send_msg	../conbot.py	/^    def send_msg(self, message):$/;"	kind:member	line:171
 send_msg	../docs/client.py	/^    def send_msg(self, message):$/;"	kind:member	line:133
 send_msg	../docs/server.py	/^    def send_msg(self, message):$/;"	kind:member	line:164
-send_status	../bot.py	/^    def send_status(self):$/;"	kind:member	line:210
-send_to_channel	../bot.py	/^    def send_to_channel(self, message):$/;"	kind:member	line:233
-send_to_channel	../conbot.py	/^    def send_to_channel(self, message):$/;"	kind:member	line:167
-send_to_user	../bot.py	/^    def send_to_user(self, nick, message):$/;"	kind:member	line:236
-send_to_user	../conbot.py	/^    def send_to_user(self, nick, message):$/;"	kind:member	line:170
+send_status	../bot.py	/^    def send_status(self):$/;"	kind:member	line:225
+send_to_channel	../bot.py	/^    def send_to_channel(self, message):$/;"	kind:member	line:248
+send_to_channel	../conbot.py	/^    def send_to_channel(self, message):$/;"	kind:member	line:183
+send_to_user	../bot.py	/^    def send_to_user(self, nick, message):$/;"	kind:member	line:251
+send_to_user	../conbot.py	/^    def send_to_user(self, nick, message):$/;"	kind:member	line:186
 server.py	../docs/server.py	1;"	kind:file	line:1
 socket	../bot.py	/^import socket$/;"	kind:namespace	line:7
-socket	../conbot.py	/^import socket$/;"	kind:namespace	line:3
+socket	../conbot.py	/^import socket$/;"	kind:namespace	line:4
 socket	../docs/bot_muaz.py	/^import socket$/;"	kind:namespace	line:6
 socket	../docs/client.py	/^import socket$/;"	kind:namespace	line:4
 socket	../docs/server.py	/^import socket$/;"	kind:namespace	line:2
 socket	../testserver.py	/^import socket$/;"	kind:namespace	line:4
 start_bot	../docs/bot_muaz.py	/^    def start_bot(self):$/;"	kind:member	line:153
-start_client	../bot.py	/^    def start_client(self):$/;"	kind:member	line:25
-start_client	../conbot.py	/^    def start_client(self):$/;"	kind:member	line:19
+start_client	../bot.py	/^    def start_client(self):$/;"	kind:member	line:24
+start_client	../conbot.py	/^    def start_client(self):$/;"	kind:member	line:20
 start_client	../docs/client.py	/^    def start_client(self):$/;"	kind:member	line:31
 start_server	../docs/server.py	/^    def start_server(self):$/;"	kind:member	line:31
 string	../docs/server.py	/^import string$/;"	kind:namespace	line:7
@@ -153,10 +155,10 @@ sys	../conbot.py	/^import sys$/;"	kind:namespace	line:2
 sys	../docs/bot_muaz.py	/^import sys$/;"	kind:namespace	line:5
 sys	../docs/client.py	/^import sys$/;"	kind:namespace	line:8
 sys	../docs/server.py	/^import sys$/;"	kind:namespace	line:9
-tcflush	../conbot.py	/^from termios import tcflush, TCIFLUSH$/;"	kind:namespace	line:6
+tcflush	../conbot.py	/^from termios import tcflush, TCIFLUSH$/;"	kind:namespace	line:7
 testserver.py	../testserver.py	1;"	kind:file	line:1
 time	../bot.py	/^import time$/;"	kind:namespace	line:8
-time	../conbot.py	/^import time$/;"	kind:namespace	line:4
+time	../conbot.py	/^import time$/;"	kind:namespace	line:5
 time	../docs/server.py	/^import time$/;"	kind:namespace	line:3
 unpad	../docs/client.py	/^    def unpad(self, data, block_size):$/;"	kind:member	line:195
 unpad	../docs/server.py	/^    def unpad(self, data, block_size):$/;"	kind:member	line:226

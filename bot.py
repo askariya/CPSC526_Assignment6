@@ -27,12 +27,16 @@ class Bot_Client:
             sys.exit()
             
         while connected:
+            # text = self.get_text()
+            # self.log(text)
             try:
                 text = self.get_text()
-                self.log(text)
-            except socket.error:
+                self.log("text: " + text)
+            except Exception:
                 self.log("Connection Error.")
-                self.__reconnect(5)
+                sys.exit("Error -- Exception Thrown")
+                # self.__reconnect(5)
+                # continue
 
             # validate message (check if controller *command*)
             if not self.check_msg(text):
@@ -41,13 +45,14 @@ class Bot_Client:
             command = input_list[1].strip()
 
             # execute the command
+            # self.execute_command(command)
             try:
                 self.execute_command(command)
-            except socket.error:
+            except Exception:
                 self.log("Connection Error.")
-                self.__reconnect(5)
-                
-        self.irc_socket.close()
+                sys.exit("Error -- Exception Thrown")
+                # self.__reconnect(5)
+                # continue
 
     # attempts connection with an input timeout in seconds
     def __attempt_connection(self, timeout):

@@ -40,8 +40,6 @@ class Controller_Client:
             # executes if there is no input to be read in
             else:
                 text = self.get_text()
-
-        self.irc_socket.close()
     
     # prompts the user to enter input in order to execute command
     #TODO delete if I don't end up needing it
