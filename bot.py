@@ -31,6 +31,7 @@ class Bot_Client:
         while connected:
             try:
                 text = self.get_text()
+                self.log(text)
             except socket.error:
                 self.log("Error: Connection to IRC server has been lost")
                 self.__reconnect(5)
