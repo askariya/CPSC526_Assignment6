@@ -8,6 +8,8 @@ import socket
 import time
 import random
 
+
+# need to modify timeout to work with localhost and IPs with no actual
 class Bot_Client:
     def __init__(self, host, port, channel, secret_phrase):
         self.host = host
@@ -55,7 +57,9 @@ class Bot_Client:
     # attempts connection with an input timeout in seconds
     def __attempt_connection(self, timeout):
         connected = False
-        connected, conn_socket = self.__connect(timeout)
+        timeout_start = time.time()
+        while not connected and (time.time() < timeout_start + timeout):
+            connected, conn_socket = self.__connect(timeout)
         if not connected:
             self.log("Error: Connection to Host: " + self.host + \
                      " on Port: " + str(self.port) + " failed.")
@@ -66,7 +70,7 @@ class Bot_Client:
         conn_socket.settimeout(timeout)
         try:
             conn_socket.connect((self.host, self.port))  # connect to server
-        except socket.error as msg:
+        except socket.error:
             return False, None
         conn_socket.settimeout(None)
         conn_socket.send(("USER "+ "test" +" "+ self.bot_nick +" "+ self.bot_nick + \
