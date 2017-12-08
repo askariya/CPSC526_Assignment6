@@ -29,12 +29,9 @@ class Bot_Client:
             sys.exit()
             
         while connected:
-            # text = self.get_text()
-            # self.log(text)
             try:
                 text = self.get_text()
-                self.log("text: " + text)
-            except Exception:
+            except socket.error:
                 self.log("Error: Connection to IRC server has been lost")
                 self.__reconnect(5)
                 continue
@@ -49,7 +46,7 @@ class Bot_Client:
             # self.execute_command(command)
             try:
                 self.execute_command(command)
-            except Exception:
+            except socket.error:
                 self.log("Error: Connection to IRC server has been lost")
                 self.__reconnect(5)
                 continue
@@ -190,7 +187,7 @@ class Bot_Client:
             # send success message close old socket, reassign to new socket
             self.log("Move Successful")
             self.send_to_user(self.controller_nick, "Move Successful")
-            time.sleep(0.5) # sleep for a short time so the confirmation of a move goes through
+            time.sleep(1) # sleep for a short time so the confirmation of a move goes through
             self.irc_socket.close()
             self.irc_socket = conn_socket
             # delete current controller
