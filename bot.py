@@ -33,10 +33,9 @@ class Bot_Client:
                 text = self.get_text()
                 self.log("text: " + text)
             except Exception:
-                self.log("Connection Error.")
-                sys.exit("Error -- Exception Thrown")
-                # self.__reconnect(5)
-                # continue
+                self.log("Error: Connection to IRC server has been lost")
+                self.__reconnect(5)
+                continue
 
             # validate message (check if controller *command*)
             if not self.check_msg(text):
@@ -49,10 +48,9 @@ class Bot_Client:
             try:
                 self.execute_command(command)
             except Exception:
-                self.log("Connection Error.")
-                sys.exit("Error -- Exception Thrown")
-                # self.__reconnect(5)
-                # continue
+                self.log("Error: Connection to IRC server has been lost")
+                self.__reconnect(5)
+                continue
 
     # attempts connection with an input timeout in seconds
     def __attempt_connection(self, timeout):
@@ -91,11 +89,13 @@ class Bot_Client:
 
     # attempt reconnection with timeout
     def __reconnect(self, timeout):
-        self.log("Reconnecting...")
+        self.log("Attempting to reconnect...")
         connected, conn_socket = self.__attempt_connection(timeout)
         if connected:
             self.irc_socket = conn_socket
             self.log("Reconnection successful.\nContinuing...")
+        else:
+            sys.exit()
         return connected
 
     # Function to check for the secret passphrase
@@ -247,7 +247,10 @@ class Bot_Client:
         self.irc_socket.send(message.encode())
 
     def recv_msg(self):
-        return self.irc_socket.recv(2040).decode()  #receive the text
+        data = self.irc_socket.recv(2040).decode()  #receive the text
+        if data == "":
+            raise socket.error()
+        return data
 
     # functions to send/recv messages to channel
     def send_to_channel(self, message):
